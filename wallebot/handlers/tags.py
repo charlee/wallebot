@@ -41,6 +41,7 @@ class TagsMessageHandler(MessageHandler):
         if tags:
             tags = map(lambda x:x.strip('# '), tags)
             key = self.__KEY__ % msg.chat_id
-            rds.sadd(key, *tags)
+            for tag in tags:
+                rds.sadd(key, tag)
 
             print "%s: Added tags: %s" % (msg.chat_id, ', '.join(tags))
