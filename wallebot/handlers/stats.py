@@ -41,7 +41,7 @@ class StatsCronHandler(CronHandler):
     
     def schedule(self):
         print "Stats scheduled at every day 23:59"
-        schedule.every().day.at("23:59").do(self.handle)
+        schedule.every().day.at(self.tzfix("23:59")).do(self.handle)
 
     def handle(self):
         

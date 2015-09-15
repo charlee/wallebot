@@ -1,3 +1,6 @@
+import pytz
+from dateutil.tz import tzlocal
+from datetime import datetime
 
 class CommandHandler(object):
 
@@ -32,6 +35,20 @@ class CronHandler(object):
 
 
     __CRON__ = ''
+
+    def tzfix(self, time):
+        from wallebot.app import cfg
+
+        hour, minute = time.split(':')
+        tz = pytz.timezone(cfg.TIMEZONE)
+        now = datetime.now()
+        target_time = datetime(now.year, now.month, now.day, int(hour), int(minute), 0, tzinfo=tz)
+
+        local_tz = tzlocal()
+        target_time.replace(tzinfo=local_tz)
+
+        return target_time.strftime('%H:%M')
+        
 
     def __init__(self, bot):
         self.bot = bot
