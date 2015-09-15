@@ -1,4 +1,5 @@
 import telegram
+import schedule
 from .handlers import CommandHandler, MessageHandler
 
 class WallEBot(object):
@@ -9,6 +10,7 @@ class WallEBot(object):
         self.timeout = timeout
         self.commands = {}
         self.msg_handlers = []      # msg handlers will be processed in their added order
+        self.cron_handlers = []
 
         self.updates = []
 
@@ -66,7 +68,12 @@ class WallEBot(object):
         """
         self.msg_handlers.append(msg_handler)
 
+
+    def add_cron_handler(self, cron_handler):
+        self.cron_handlers.append(cron_handler)
+
     
     def run(self):
         while True:
             self.process()
+            schedule.run_pending()

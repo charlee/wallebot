@@ -1,5 +1,4 @@
 
-
 class CommandHandler(object):
 
     def __init__(self, bot):
@@ -26,4 +25,20 @@ class MessageHandler(object):
         """
         Handle this message
         """
+        raise NotImplemented
+
+
+class CronHandler(object):
+
+
+    __CRON__ = ''
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.schedule()
+
+    def schedule(self):
+        raise NotImplemented
+
+    def handle(self):
         raise NotImplemented

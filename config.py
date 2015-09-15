@@ -3,3 +3,7 @@
 
 REDIS_HOST = '127.0.0.1'
 REDIS_DB = 0
+
+
+# handler config
+TIMEZONE = 'US/Eastern'
