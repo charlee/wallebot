@@ -40,8 +40,9 @@ class StatsMessageHandler(MessageHandler):
 class StatsCronHandler(CronHandler):
     
     def schedule(self):
-        print "Stats scheduled at every day 23:59"
-        schedule.every().day.at(self.tzfix("23:59")).do(self.handle)
+        time = "23:59"
+        print "Stats scheduled at every day 23:59 (%s at local timezone)" % self.tzfix(time)
+        schedule.every().day.at(self.tzfix(time)).do(self.handle)
 
     def handle(self):
         

@@ -1,4 +1,5 @@
 import pytz
+from tzlocal import get_localzone
 from dateutil.tz import tzlocal
 from datetime import datetime
 
@@ -41,11 +42,11 @@ class CronHandler(object):
 
         hour, minute = time.split(':')
         tz = pytz.timezone(cfg.TIMEZONE)
-        now = datetime.now()
+        now = datetime.now(tz)
         target_time = datetime(now.year, now.month, now.day, int(hour), int(minute), 0, tzinfo=tz)
 
-        local_tz = tzlocal()
-        target_time.replace(tzinfo=local_tz)
+        local_tz = get_localzone()
+        target_time = target_time.astimezone(local_tz)
 
         return target_time.strftime('%H:%M')
         
