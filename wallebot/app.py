@@ -13,7 +13,7 @@ bot = WallEBot(cfg.TELEGRAM_TOKEN)
 
 bot.add_command(TagsCommandHandler(bot.bot))
 bot.add_msg_handler(TagsMessageHandler(bot.bot))
-bot.add_msg_handler(StatsMessageHandler(bot.bot))
+#bot.add_msg_handler(StatsMessageHandler(bot.bot))
 bot.add_msg_handler(RepeatMessageHandler(bot.bot))
 bot.add_cron_handler(StatsCronHandler(bot.bot))
 

@@ -74,6 +74,12 @@ class WallEBot(object):
 
     
     def run(self):
+
+        try:
+            self.last_update_id = self.bot.getUpdates()[-1].update_id
+        except IndexError:
+            self.last_update_id = None
+
         while True:
             self.process()
             schedule.run_pending()
