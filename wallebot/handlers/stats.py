@@ -59,7 +59,6 @@ class StatsCronHandler(CronHandler):
             rank_key = __RANK_KEY__ % (chat_id, today)
 
             ranks = rds.zrangebyscore(rank_key, 1, '+inf', start=0, num=10, withscores=True)
-            ranks.append(('test', '10'))        # TODO: remove
             ranks.sort(key=lambda x:x[1], reverse=True)
 
             text = 'Top 10 @ %s\n*******************\n%s' % (today, '\n'.join('@%s - %d' % (p[0], int(p[1])) for p in ranks))
