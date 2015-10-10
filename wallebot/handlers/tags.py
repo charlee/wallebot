@@ -16,9 +16,10 @@ class TagsCommandHandler(CommandHandler):
         key = self.__KEY__ % msg.chat_id
         tags = rds.smembers(key)
 
+        tags = map(lambda x:(x, HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8')), tags)
         params = map(lambda x:HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8'), params)
 
-        tags = filter(lambda x:all(k in x for k in params), tags)
+        tags = filter(lambda x:all(k in x[1] for k in params), tags)
 
         if tags:
 
@@ -27,6 +28,8 @@ class TagsCommandHandler(CommandHandler):
             if len(tags) > TAGS_DISPLAY_MAX:
                 more_msg = "\n...and %d tags more" % (len(tags) - TAGS_DISPLAY_MAX)
                 tags = random.sample(tags, TAGS_DISPLAY_MAX)
+
+            tags = map(lambda x:x[0], tags)
 
             tags = sorted(list(tags))
             text = '\n'.join('#' + tag for tag in tags)
