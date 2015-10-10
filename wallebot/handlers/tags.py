@@ -1,5 +1,6 @@
 import re
 import random
+from hanziconv import HanziConv
 from .base import CommandHandler, MessageHandler
 
 TAGS_DISPLAY_MAX = 20
@@ -14,6 +15,8 @@ class TagsCommandHandler(CommandHandler):
         from wallebot.app import rds
         key = self.__KEY__ % msg.chat_id
         tags = rds.smembers(key)
+
+        params = map(lambda x:HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8'), params)
 
         tags = filter(lambda x:all(k in x for k in params), tags)
 
