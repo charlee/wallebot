@@ -1,5 +1,8 @@
 import re
+import random
 from .base import CommandHandler, MessageHandler
+
+TAGS_DISPLAY_MAX = 20
 
 class TagsCommandHandler(CommandHandler):
 
@@ -15,8 +18,19 @@ class TagsCommandHandler(CommandHandler):
         tags = filter(lambda x:all(k in x for k in params), tags)
 
         if tags:
+
+            more_msg = ''
+
+            if len(tags) > TAGS_DISPLAY_MAX:
+                more_msg = "\n...and %d tags more" % (len(tags) - TAGS_DISPLAY_MAX)
+                tags = random.sample(tags, TAGS_DISPLAY_MAX)
+
             tags = sorted(list(tags))
             text = '\n'.join('#' + tag for tag in tags)
+
+            if more_msg:
+                text += more_msg
+
             self.bot.sendMessage(chat_id=msg.chat_id, text=text)
             
 
