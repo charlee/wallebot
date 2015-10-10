@@ -1,5 +1,6 @@
 import telegram
 import schedule
+import time
 from .handlers import CommandHandler, MessageHandler
 
 class WallEBot(object):
@@ -19,29 +20,33 @@ class WallEBot(object):
         """
         Retrieve updates from the server and process each message
         """
-        self.updates = self.bot.getUpdates(offset=self.last_update_id, timeout=self.timeout)
+        try:
+          self.updates = self.bot.getUpdates(offset=self.last_update_id, timeout=self.timeout)
 
-        for update in self.updates:
-            text = update.message.text.encode('utf-8')
+          for update in self.updates:
+              text = update.message.text.encode('utf-8')
 
-            # if it is a command
-            if text.startswith('/'):
-                # check command handlers and run matching handler
-                parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
-                cmd = parts[0].lstrip('/')
-                params = parts[1:]
-                handler = self.commands.get(cmd)
-                if handler and isinstance(handler, CommandHandler):
-                    print "%s: Run command: %s" % (update.message.chat_id, text)
-                    handler.handle(update.message, params)
+              # if it is a command
+              if text.startswith('/'):
+                  # check command handlers and run matching handler
+                  parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
+                  cmd = parts[0].lstrip('/')
+                  params = parts[1:]
+                  handler = self.commands.get(cmd)
+                  if handler and isinstance(handler, CommandHandler):
+                      print "%s: Run command: %s" % (update.message.chat_id, text)
+                      handler.handle(update.message, params)
 
-            # otherwise, its a normal message
-            else:
-                for msg_handler in self.msg_handlers:
-                    if msg_handler.test(update.message):
-                        msg_handler.handle(update.message)
+              # otherwise, its a normal message
+              else:
+                  for msg_handler in self.msg_handlers:
+                      if msg_handler.test(update.message):
+                          msg_handler.handle(update.message)
 
-            self.last_update_id = update.update_id + 1
+              self.last_update_id = update.update_id + 1
+
+        except Exception:
+            time.sleep(10)
 
 
     def add_command(self, handler):
@@ -77,7 +82,7 @@ class WallEBot(object):
 
         try:
             self.last_update_id = self.bot.getUpdates()[-1].update_id
-        except IndexError:
+        except Exception:
             self.last_update_id = None
 
         while True:
