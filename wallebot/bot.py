@@ -1,7 +1,13 @@
+# coding: utf-8
+
+import random
 import telegram
+from datetime import datetime, timedelta
 import schedule
 import time
 from .handlers import CommandHandler, MessageHandler
+
+CMD_QUOTA = 10    # max 10 cmds / min
 
 class WallEBot(object):
 
@@ -14,6 +20,18 @@ class WallEBot(object):
         self.cron_handlers = []
 
         self.updates = []
+
+
+        self.cmd_counter = []
+
+        self.cmd_denial_msg = (
+            '（；´・д・）好累，让我歇会儿～～'
+            '（´□｀川）ゝ. z Z。。',
+            '（；￣д￣）哈。。',
+            '(｡´-д-)好累。。',
+            '(ó﹏ò｡)TZ 累趴了……',
+            '(´×ω×`)',
+        )
 
 
     def process(self):
@@ -31,14 +49,30 @@ class WallEBot(object):
 
             # if it is a command
             if text.startswith('/'):
-                # check command handlers and run matching handler
-                parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
-                cmd = parts[0].lstrip('/')
-                params = parts[1:]
-                handler = self.commands.get(cmd)
-                if handler and isinstance(handler, CommandHandler):
-                    print "%s: Run command: %s" % (update.message.chat_id, text)
-                    handler.handle(update.message, params)
+                # check cmd counter to remove expired cmds
+                expire_time = datetime.now() - timedelta(minutes=1)
+                while self.cmd_counter and self.cmd_counter[0]['time'] < expire_time:
+                    self.cmd_counter.pop(0)
+
+                if len(self.cmd_counter) >= CMD_QUOTA:
+                    self.bot.sendMessage(chat_id=update.message.chat_id, text=random.choice(self.cmd_denial_msg))
+
+                else:
+
+                    # check command handlers and run matching handler
+                    parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
+                    cmd = parts[0].lstrip('/')
+                    params = parts[1:]
+                    handler = self.commands.get(cmd)
+                    if handler and isinstance(handler, CommandHandler):
+                        # add command to counter to check for quota
+                        self.cmd_counter.append({ 'cmd': text, 'time': datetime.now() })
+
+                        # log
+                        print "%s: Run command: %s, quota=%d" % (update.message.chat_id, text, CMD_QUOTA - len(self.cmd_counter))
+
+                        handler.handle(update.message, params)
+                    
 
             # otherwise, its a normal message
             else:
