@@ -1,5 +1,5 @@
 python-dateutil==2.4.2
-python-telegram-bot==2.8.3
+python-telegram-bot==2.8.7
 pytz==2015.4
 redis==2.10.3
 schedule==0.3.2
