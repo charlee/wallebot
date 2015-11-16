@@ -4,6 +4,7 @@ from bot import WallEBot
 from handlers.tags import TagsCommandHandler, TagsMessageHandler
 from handlers.stats import StatsMessageHandler, StatsCronHandler
 from handlers.repeat import RepeatMessageHandler
+from handlers.morse import MorseCodeHandler
 
 
 cfg = load_config()
@@ -16,6 +17,7 @@ bot.add_msg_handler(TagsMessageHandler(bot.bot))
 #bot.add_msg_handler(StatsMessageHandler(bot.bot))
 bot.add_msg_handler(RepeatMessageHandler(bot.bot))
 #bot.add_cron_handler(StatsCronHandler(bot.bot))
+bot.add_msg_handler(MorseCodeHandler(bot.bot))
 
 def run():
     bot.run()
