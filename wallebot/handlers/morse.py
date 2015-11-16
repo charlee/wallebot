@@ -70,9 +70,11 @@ class MorseCodeHandler(MessageHandler):
 
         result = ' '.join(results)
 
-        print 'Translate morse: %s // %s' % (text, result)
+        if len(result) >= 3:
 
-        self.bot.sendMessage(chat_id=msg.chat_id, text=result)
+            print 'Translate morse: %s // %s' % (text, result)
+
+            self.bot.sendMessage(chat_id=msg.chat_id, text=result)
 
 
     def translate(self, morse):
