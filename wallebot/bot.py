@@ -7,7 +7,7 @@ import schedule
 import time
 from .handlers import CommandHandler, MessageHandler
 
-CMD_QUOTA = 10    # max 10 cmds / min
+CMD_QUOTA = 6    # max 10 cmds / min
 
 class WallEBot(object):
 
@@ -25,7 +25,7 @@ class WallEBot(object):
         self.cmd_counter = []
 
         self.cmd_denial_msg = (
-            '（；´・д・）好累，让我歇会儿～～'
+            '（；´・д・）好累，让我歇会儿～～',
             '（´□｀川）ゝ. z Z。。',
             '（；￣д￣）哈。。',
             '(｡´-д-)好累。。',
