@@ -43,6 +43,7 @@ class APICommandHandler(CommandHandler):
 
         from wallebot.app import rds
         user_id = msg.chat.id
+        user_name = msg.from_user.username
 
         token = rds.hget(API_TOKEN_KEY, user_id)
 
@@ -55,7 +56,7 @@ class APICommandHandler(CommandHandler):
 
             # save the token
             rds.hset(API_TOKEN_KEY, user_id, token)
-            rds.hset(API_TOKEN_REV_KEY, token, user_id)
+            rds.hset(API_TOKEN_REV_KEY, token, '%s:%s' % (user_id, user_name))
 
         self.bot.sendMessage(chat_id=msg.chat_id, text='Your API token is "%s".' % token)
         

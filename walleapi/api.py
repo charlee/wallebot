@@ -12,8 +12,8 @@ def validate_api_token():
     
     api_token = request.headers.get('WallEAPIToken')
     user_info = rds.hget(API_TOKEN_REV_KEY, api_token)
-    if user_info is not None and ',' in user_info:
-        return user_info.split(',')
+    if user_info is not None and ':' in user_info:
+        return user_info.split(':')
     else:
         return None, None
 
