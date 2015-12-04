@@ -7,3 +7,5 @@ REDIS_DB = 0
 
 # handler config
 TIMEZONE = 'US/Eastern'
+
+DEBUG = True

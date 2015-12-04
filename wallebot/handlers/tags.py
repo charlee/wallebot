@@ -4,16 +4,15 @@ from hanziconv import HanziConv
 from .base import CommandHandler, MessageHandler
 
 TAGS_DISPLAY_MAX = 20
+TAGS_KEY = 'tags:%d'
 
 class TagsCommandHandler(CommandHandler):
 
     aliases = ('tags', 't')
 
-    __KEY__ = 'tags:%d'
-
     def handle(self, msg, params):
         from wallebot.app import rds
-        key = self.__KEY__ % msg.chat_id
+        key = TAGS_KEY % msg.chat_id
         tags = rds.smembers(key)
 
         tags = map(lambda x:(x, HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8')), tags)
@@ -44,7 +43,6 @@ class TagsCommandHandler(CommandHandler):
 
 class TagsMessageHandler(MessageHandler):
 
-    __KEY__ = 'tags:%d'
 
     def test(self, msg):
         return msg.text and (msg.text[0] == '#' or ' #' in msg.text)
@@ -60,7 +58,7 @@ class TagsMessageHandler(MessageHandler):
 
         if tags:
             tags = map(lambda x:x.strip('# '), tags)
-            key = self.__KEY__ % msg.chat_id
+            key = TAGS_KEY % msg.chat_id
             for tag in tags:
                 rds.sadd(key, tag)
 

@@ -1,3 +1,8 @@
+Flask==0.10.1
+hanziconv==0.2.2
+itsdangerous==0.24
+Jinja2==2.8
+MarkupSafe==0.23
 python-dateutil==2.4.2
 python-telegram-bot==2.8.7
 pytz==2015.4
@@ -5,5 +10,5 @@ redis==2.10.3
 schedule==0.3.2
 six==1.9.0
 tzlocal==1.2
+Werkzeug==0.11.2
 wheel==0.24.0
-hanziconv==0.2.2
