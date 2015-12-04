@@ -33,8 +33,15 @@ def random_tag():
     if user_id is None or chat_id is None:
         return jsonify({'result': 'error', 'message': 'Please set WallEAPIToken and WallEAPIChatId headers'})
 
+    keywords = request.form.get('k')
+    keywords = filter(None, keywords.split(' '))
+    keywords = map(lambda x:x.encode('utf-8'), keywords)
+
     key = TAGS_KEY % chat_id
     tags = list(rds.smembers(key))
+    if keywords:
+        tags = filter(lambda x:all(k in x for k in keywords), tags)
+    
     if len(tags) > 0:
       tag = random.choice(tags)
 
