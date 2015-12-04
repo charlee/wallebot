@@ -35,10 +35,14 @@ def random_tag():
 
     key = TAGS_KEY % chat_id
     tags = list(rds.smembers(key))
-    tag = random.choice(tags)
+    if len(tags) > 0:
+      tag = random.choice(tags)
 
-    bot = WallEBot(app.config['TELEGRAM_TOKEN'])
-    bot.bot.sendMessage(chat_id=chat_id, text='#%s' % tag)
+      bot = WallEBot(app.config['TELEGRAM_TOKEN'])
+      bot.bot.sendMessage(chat_id=chat_id, text='#%s' % tag)
 
 
-    return jsonify({'result': 'success'})
+      return jsonify({'result': 'success'})
+
+    else:
+      return jsonify({'result': 'error', 'message': 'No tags yet'})
