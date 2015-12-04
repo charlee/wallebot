@@ -11,9 +11,11 @@ api_bp = Blueprint('api_bp', __name__)
 def validate_api_token():
     
     api_token = request.headers.get('WallEAPIToken')
-    user_id = rds.hget(API_TOKEN_REV_KEY, api_token)
-
-    return user_id
+    user_info = rds.hget(API_TOKEN_REV_KEY, api_token)
+    if user_info is not None and ',' in user_info:
+        return user_info.split(',')
+    else:
+        return None, None
 
 
 def get_chat_id():
@@ -27,15 +29,16 @@ def get_chat_id():
 @api_bp.route('/random-tag/', methods=['POST'])
 def random_tag():
     
-    user_id = validate_api_token()
+    user_id, username = validate_api_token()
     chat_id = get_chat_id()
 
     if user_id is None or chat_id is None:
         return jsonify({'result': 'error', 'message': 'Please set WallEAPIToken and WallEAPIChatId headers'})
 
     keywords = request.form.get('k')
-    keywords = filter(None, keywords.split(' '))
-    keywords = map(lambda x:x.encode('utf-8'), keywords)
+    if keywords is not None:
+        keywords = filter(None, keywords.split(' '))
+        keywords = map(lambda x:x.encode('utf-8'), keywords)
 
     key = TAGS_KEY % chat_id
     tags = list(rds.smembers(key))
@@ -46,7 +49,7 @@ def random_tag():
       tag = random.choice(tags)
 
       bot = WallEBot(app.config['TELEGRAM_TOKEN'])
-      bot.bot.sendMessage(chat_id=chat_id, text='#%s' % tag)
+      bot.bot.sendMessage(chat_id=chat_id, text='#%s via @%s' % (tag, username))
 
 
       return jsonify({'result': 'success'})
