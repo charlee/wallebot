@@ -49,7 +49,7 @@ def random_tag():
       tag = random.choice(tags)
 
       bot = WallEBot(app.config['TELEGRAM_TOKEN'])
-      bot.bot.sendMessage(chat_id=chat_id, text='#%s via @%s' % (tag, username))
+      bot.bot.sendMessage(chat_id=chat_id, text='#%s via %s' % (tag, username))
 
 
       return jsonify({'result': 'success'})
