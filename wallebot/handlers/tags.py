@@ -18,7 +18,11 @@ class TagsCommandHandler(CommandHandler):
         tags = map(lambda x:(x, HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8')), tags)
         params = map(lambda x:HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8'), params)
 
-        tags = filter(lambda x:all(k in x[1] for k in params), tags)
+        positive_params = [ p for p in params if not p.startswith('-') ]
+        negative_params = [ p[1:] for p in params if p.startswith('-') ]
+
+        tags = filter(lambda x:all(k in x[1] for k in positive_params), tags)
+        tags = filter(lambda x:all(k not in x[1] for k in negative_params), tags)
 
         if tags:
 
