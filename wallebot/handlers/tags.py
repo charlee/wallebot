@@ -15,8 +15,8 @@ class TagsCommandHandler(CommandHandler):
         key = TAGS_KEY % msg.chat_id
         tags = rds.smembers(key)
 
-        tags = map(lambda x:(x, HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8')), tags)
-        params = map(lambda x:HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8'), params)
+        tags = map(lambda x:(x, HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8').lower()), tags)
+        params = map(lambda x:HanziConv.toSimplified(x.decode('utf-8')).encode('utf-8').lower(), params)
 
         positive_params = [ p for p in params if not p.startswith('-') ]
         negative_params = [ p[1:] for p in params if p.startswith('-') ]
