@@ -1,0 +1,65 @@
+import os
+import json
+from .base import CommandHandler, MessageHandler
+
+TAGS_DISPLAY_MAX = 20
+TAGS_KEY = 'tags:%d'
+
+class MudEmoteCommandHandler(CommandHandler):
+
+    aliases = ('chat', 'e')
+    
+    def __init__(self, bot):
+        super(MudEmoteCommandHandler, self).__init__(bot)
+
+        # load emote.json
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'emote.json')
+        self.emotes = json.loads(open(path).read())
+
+    def get_emote(self, action, target_type='none'):
+        msg_dict = self.emotes.get(action)
+        if not msg_dict:
+            return
+
+        msg = None
+        if target_type == 'self':
+            msg = msg_dict.get('self')
+
+        if msg is None or target_type == 'nobody':
+            msg = msg_dict.get('nobody')
+
+        if msg is None or target_type == 'other':
+            msg = msg_dict.get('other')
+
+        return msg
+            
+
+    def handle(self, msg, params):
+        if not params:
+            return
+
+        action = params[0].strip()
+        target = params[1] if len(params) >= 2 else None
+
+        # process target before use
+        if target:
+            target = target.decode('utf-8')
+            if target.startswith('@'):
+                target = target[1:]
+
+        if target:
+            if target == msg.from_user.username:
+                emote = self.get_emote(action, 'self')
+            else:
+                emote = self.get_emote(action, 'other')
+        else:
+            emote = self.get_emote(action, 'nobody')
+
+        if emote:
+            emote = emote.replace('%u', msg.from_user.username)
+            if target and target != msg.from_user.username:
+                emote = emote.replace('%t', target)
+            
+        if emote and '%t' not in emote:
+            self.bot.sendMessage(chat_id=msg.chat_id, text=emote)
+    
