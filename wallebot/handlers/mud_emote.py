@@ -8,6 +8,7 @@ TAGS_KEY = 'tags:%d'
 class MudEmoteCommandHandler(CommandHandler):
 
     aliases = ('chat', 'e')
+    HELP_CMD_COUNT = 100
     
     def __init__(self, bot):
         super(MudEmoteCommandHandler, self).__init__(bot)
@@ -36,6 +37,11 @@ class MudEmoteCommandHandler(CommandHandler):
 
     def handle(self, msg, params):
         if not params:
+            if msg.chat.type == 'private':
+                keys = sorted(self.emotes.keys())
+                for n in range(0, len(keys), self.HELP_CMD_COUNT):
+                    text = ', '.join(keys[n:n+self.HELP_CMD_COUNT])
+                    self.bot.sendMessage(chat_id=msg.chat_id, text=text)
             return
 
         action = params[0].strip()
