@@ -19,7 +19,7 @@ class TagsCommandHandler(CommandHandler):
 
         keyword = ' '.join(params)
 
-        print '%s: Querying keyword %s...' % (msg.chat_id, keyword)
+        #print '%s: Querying keyword %s...' % (msg.chat_id, keyword)
 
         (total, tags) = fts.search(keyword, limit=None)
 
@@ -55,6 +55,8 @@ class TagsMessageHandler(MessageHandler):
 
         if tags:
             tags = map(lambda x:x.strip('# '), tags)
-            fts.add_documents(tags)
-
-            print "%s: Added tags: %s" % (msg.chat_id, ', '.join(tags))
+            for tag in tags:
+                (total, results) = fts.search(tag, limit=1)
+                if total == 0:
+                    fts.add_document(tag)
+                    print "%s: Added tag: %s" % (msg.chat_id, tag)
