@@ -45,7 +45,7 @@ class FullTextSearch(object):
         q = qp.parse(keyword)
 
         with self.ix.searcher() as searcher:
-            hits = searcher.search(q)
+            hits = searcher.search(q, limit=limit)
             results = (hits.scored_length(), [s['content'] for s in hits])
 
         return results

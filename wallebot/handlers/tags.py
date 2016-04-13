@@ -21,14 +21,15 @@ class TagsCommandHandler(CommandHandler):
 
         print '%s: Querying keyword %s...' % (msg.chat_id, keyword)
 
-        (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
+        (total, tags) = fts.search(keyword, limit=None)
 
         if tags:
 
             more_msg = ''
 
-            if len(tags) < total:
-                more_msg = "\n...and %d tags more" % (len(tags) - total)
+            if len(tags) > TAGS_DISPLAY_MAX:
+                more_msg = "\n...and %d tags more" % (len(tags) - TAGS_DISPLAY_MAX)
+                tags = random.sample(tags, TAGS_DISPLAY_MAX)
 
             text = '\n'.join('#' + tag for tag in tags)
 
