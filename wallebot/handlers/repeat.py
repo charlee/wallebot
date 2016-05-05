@@ -9,35 +9,37 @@ class RepeatMessageHandler(MessageHandler):
     """
 
     def test(self, msg):
-        return not msg.text.startswith('/') and '#' not in msg.text
+        return not msg['text'].startswith('/') and '#' not in msg['text']
 
     def handle(self, msg):
 
+        chat_id = msg['chat']['id']
+
         from wallebot.app import rds
-        key = __REPEAT_KEY__ % msg.chat_id
+        key = __REPEAT_KEY__ % chat_id
 
         last_msg = rds.hget(key, 'text')
         last_users = rds.hget(key, 'users') or ''
         last_users = filter(None, last_users.split(','))
 
-        text = msg.text.encode('utf-8')
+        text = msg['text'].encode('utf-8')
 
-        if last_msg == text and msg.from_user.username not in last_users:
+        username = msg['from']['username']
+        if last_msg == text and username not in last_users:
 
-            last_users.append(msg.from_user.username)
+            last_users.append(username)
 
-            print 'Found repeat, add user %s, user=%s ' % (msg.from_user.username, last_users)
+            print 'Found repeat, add user %s, user=%s ' % (username, last_users)
 
             if len(last_users) == THRESHOLD:            # use # to ensure msg is sent only once
 
-                print 'Triggered repeat, sending msg to %s' % msg.chat_id
-                self.bot.sendMessage(chat_id=msg.chat_id, text=text)
+                print 'Triggered repeat, sending msg to %s' % chat_id
+                self.bot.sendMessage(chat_id=chat_id, text=text)
 
             rds.hset(key, 'users', ','.join(last_users))
 
         else:
-            last_msg = text
             rds.hset(key, 'text', text)
-            rds.hset(key, 'users', msg.from_user.username)
+            rds.hset(key, 'users', username)
 
 

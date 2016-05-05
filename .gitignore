@@ -3,4 +3,6 @@
 .env/
 log/
 run/
+.idea/
+*.rdb
 fulltext_search_index/

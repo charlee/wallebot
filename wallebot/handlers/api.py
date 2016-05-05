@@ -17,16 +17,18 @@ class APICommandHandler(CommandHandler):
     def handle(self, msg, params):
         from wallebot.app import rds
 
+        chat_id = msg['chat']['id']
+
         # filter out group chat
-        if msg.chat.type != 'private':
+        if msg['chat']['type'] != 'private':
             return
 
         if len(params) < 1:
-            self.show_help(msg.chat_id)
+            self.show_help(chat_id)
         else:
             cmd = params[0]
             if cmd not in APICommandHandler.valid_cmds:
-                self.show_help(msg.chat_id)
+                self.show_help(chat_id)
             else:
                 func = getattr(self, 'cmd_%s' % cmd, None)
                 if func is not None:
@@ -42,8 +44,8 @@ class APICommandHandler(CommandHandler):
     def cmd_token(self, msg, params):
 
         from wallebot.app import rds
-        user_id = msg.chat.id
-        user_name = msg.from_user.username
+        user_id = msg['chat']['id']
+        user_name = msg['from']['username']
 
         token = rds.hget(API_TOKEN_KEY, user_id)
 
@@ -58,19 +60,20 @@ class APICommandHandler(CommandHandler):
             rds.hset(API_TOKEN_KEY, user_id, token)
             rds.hset(API_TOKEN_REV_KEY, token, '%s:%s' % (user_id, user_name))
 
-        self.bot.sendMessage(chat_id=msg.chat_id, text='Your API token is "%s".' % token)
+        self.bot.sendMessage(chat_id=user_id, text='Your API token is "%s".' % token)
         
     def cmd_chatid(self, msg, params):
         from wallebot.app import rds
-        rds.hset(API_CHATID_PENDING, msg.chat.id, int(time.time()) + 30)
-        self.bot.sendMessage(chat_id=msg.chat_id, text='Send any message in 30s in a chat to get its chat_id.')
+        chat_id = msg['chat']['id']
+        rds.hset(API_CHATID_PENDING, chat_id, int(time.time()) + 30)
+        self.bot.sendMessage(chat_id=chat_id, text='Send any message in 30s in a chat to get its chat_id.')
         
         
 
 class APIMessageHandler(MessageHandler):
     
     def test(self, msg):
-        return not msg.text.startswith('/') and '#' not in msg.text
+        return not msg['text'].startswith('/') and '#' not in msg['text']
 
     def handle(self, msg):
         from wallebot.app import rds
@@ -81,7 +84,7 @@ class APIMessageHandler(MessageHandler):
             # expired pending, remove
             if int(v) < now:
                 rds.hdel(API_CHATID_PENDING, k)
-            elif str(k) == str(msg.from_user.id):
+            elif str(k) == str(msg['from']['id']):
                 # found, send chat id back
-                self.bot.sendMessage(chat_id=k, text='chat_id="%s"' % msg.chat.id)
+                self.bot.sendMessage(chat_id=k, text='chat_id="%s"' % msg['chat']['id'])
                 rds.hdel(API_CHATID_PENDING, k)
