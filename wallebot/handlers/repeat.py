@@ -1,7 +1,7 @@
 from .base import MessageHandler
 
 __REPEAT_KEY__ = 'repeat:%s'      # chat_id
-THRESHOLD = 3
+THRESHOLD = 2
 
 class RepeatMessageHandler(MessageHandler):
     """

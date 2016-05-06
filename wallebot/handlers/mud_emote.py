@@ -1,6 +1,6 @@
 import os
 import json
-from .base import CommandHandler, MessageHandler
+from .base import CommandHandler
 
 TAGS_DISPLAY_MAX = 20
 TAGS_KEY = 'tags:%d'
@@ -47,6 +47,9 @@ class MudEmoteCommandHandler(CommandHandler):
         action = params[0].strip()
         target = params[1] if len(params) >= 2 else None
 
+        chat_id = msg['chat']['id']
+        username = msg['from']['username']
+
         # process target before use
         if target:
             target = target.decode('utf-8')
@@ -54,7 +57,7 @@ class MudEmoteCommandHandler(CommandHandler):
                 target = target[1:]
 
         if target:
-            if target == msg.from_user.username:
+            if target == username:
                 emote = self.get_emote(action, 'self')
             else:
                 emote = self.get_emote(action, 'other')
@@ -62,10 +65,10 @@ class MudEmoteCommandHandler(CommandHandler):
             emote = self.get_emote(action, 'nobody')
 
         if emote:
-            emote = emote.replace('%u', msg.from_user.username)
-            if target and target != msg.from_user.username:
+            emote = emote.replace('%u', username)
+            if target and target != username:
                 emote = emote.replace('%t', target)
             
         if emote and '%t' not in emote:
-            self.bot.sendMessage(chat_id=msg.chat_id, text=emote)
+            self.bot.sendMessage(chat_id=chat_id, text=emote)
     

@@ -1,6 +1,6 @@
 import re
 import random
-from hanziconv import HanziConv
+import opencc
 from wallebot.fulltext_search import FullTextSearch
 from .base import CommandHandler, MessageHandler
 
@@ -16,7 +16,7 @@ class TagsCommandHandler(CommandHandler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = ( HanziConv.toSimplified(x.decode('utf-8')) for x in params )
+        params = ( opencc.convert(x.decode('utf-8')) for x in params )
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)

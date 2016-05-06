@@ -1,6 +1,5 @@
 import pytz
 from tzlocal import get_localzone
-from dateutil.tz import tzlocal
 from datetime import datetime
 
 class CommandHandler(object):
