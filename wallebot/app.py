@@ -2,7 +2,7 @@ import redis
 import time
 from config_loader import load_config
 from bot import WallEBot
-from handlers.tags import TagsCommandHandler, TagsMessageHandler
+from handlers.tags import TagsCommandHandler, TagsMessageHandler, TagsInlineHandler
 from handlers.repeat import RepeatMessageHandler
 from handlers.morse import MorseCodeHandler
 from handlers.mud_emote import MudEmoteCommandHandler
@@ -16,6 +16,8 @@ bot = WallEBot(cfg.TELEGRAM_TOKEN)
 
 bot.add_command(TagsCommandHandler(bot))
 bot.add_msg_handler(TagsMessageHandler(bot))
+bot.add_inline_handler(TagsInlineHandler(bot))
+
 bot.add_msg_handler(RepeatMessageHandler(bot))
 bot.add_msg_handler(MorseCodeHandler(bot))
 bot.add_command(APICommandHandler(bot))

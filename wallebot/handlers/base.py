@@ -12,6 +12,17 @@ class CommandHandler(object):
         raise NotImplemented
 
 
+class InlineHandler(object):
+    def __init__(self, bot):
+        self.bot = bot
+
+    def query(self, query_id, query_string, from_id):
+        raise NotImplemented
+
+    def get_result(self, result_id):
+        raise NotImplemented
+
+
 class MessageHandler(object):
 
     def __init__(self, bot):
