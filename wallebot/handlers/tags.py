@@ -1,6 +1,6 @@
 import re
 import random
-from hanziconv import HanziConv
+import opencc
 from wallebot.fulltext_search import FullTextSearch
 from .base import CommandHandler, MessageHandler
 
@@ -12,14 +12,16 @@ class TagsCommandHandler(CommandHandler):
 
     def handle(self, msg, params):
 
-        fts = FullTextSearch(str(msg.chat_id))
+        chat_id = msg['chat']['id']
 
-        params = ( HanziConv.toSimplified(x.decode('utf-8')) for x in params )
+        fts = FullTextSearch(str(chat_id))
+
+        params = ( opencc.convert(x.decode('utf-8')) for x in params )
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
 
-        #print '%s: Querying keyword %s...' % (msg.chat_id, keyword)
+        print '%s: Querying keyword %s...' % (chat_id, keyword)
 
         (total, tags) = fts.search(keyword, limit=None)
 
@@ -36,20 +38,22 @@ class TagsCommandHandler(CommandHandler):
             if more_msg:
                 text += more_msg
 
-            self.bot.sendMessage(chat_id=msg.chat_id, text=text)
+            self.bot.sendMessage(chat_id=chat_id, text=text)
             
 
 class TagsMessageHandler(MessageHandler):
 
     def test(self, msg):
-        return msg.text and (msg.text[0] == '#' or ' #' in msg.text)
+        text = msg['text']
+        return text and (text.startswith('#') or ' #' in text)
 
 
     def handle(self, msg):
 
-        fts = FullTextSearch(str(msg.chat_id))
+        chat_id = msg['chat']['id']
+        fts = FullTextSearch(str(chat_id))
 
-        text = msg.text.replace('\n', ' ').replace(' ', '  ')
+        text = msg['text'].replace('\n', ' ').replace(' ', '  ')
         text = ' %s ' % text
         tags = re.findall(r' #.+? ', text)
 
@@ -59,4 +63,6 @@ class TagsMessageHandler(MessageHandler):
                 (total, results) = fts.search(tag, limit=1)
                 if total == 0:
                     fts.add_document(tag)
-                    print "%s: Added tag: %s" % (msg.chat_id, tag)
+                    print "%s: Added tag: %s" % (chat_id, tag)
+
+            print "%s: Added tags: %s" % (chat_id, ', '.join(tags))

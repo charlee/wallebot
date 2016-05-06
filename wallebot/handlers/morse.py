@@ -54,13 +54,15 @@ MORSE_CODE = {
 class MorseCodeHandler(MessageHandler):
 
     def test(self, msg):
-        text = msg.text.encode('utf-8').replace('—', '--')
+        text = msg['text'].encode('utf-8').replace('—', '--')
         return re.match(r'^[-_./ ]+$', text)
 
     def handle(self, msg):
 
-        text = msg.text.encode('utf-8')
+        text = msg['text'].encode('utf-8')
         text = text.replace('—', '--').replace('_', '-')
+
+        chat_id = msg['chat']['id']
 
         results = []
         words = filter(None, text.split('/'))
@@ -74,7 +76,7 @@ class MorseCodeHandler(MessageHandler):
 
             print 'Translate morse: %s // %s' % (text, result)
 
-            self.bot.sendMessage(chat_id=msg.chat_id, text=result)
+            self.bot.sendMessage(chat_id=chat_id, text=result)
 
 
     def translate(self, morse):
