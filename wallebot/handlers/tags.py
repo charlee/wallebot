@@ -2,9 +2,13 @@ import re
 import random
 import opencc
 from wallebot.fulltext_search import FullTextSearch
-from .base import CommandHandler, MessageHandler
+from .base import CommandHandler, MessageHandler, InlineHandler
+from telepot.namedtuple import InlineQueryResultArticle
 
 TAGS_DISPLAY_MAX = 20
+
+# binds user to specific group. key => value: user_id => group_id
+__USER_GROUP_BINDING_KEY__ = 'tags:user_group_binding:%s'
 
 class TagsCommandHandler(CommandHandler):
 
@@ -39,7 +43,43 @@ class TagsCommandHandler(CommandHandler):
                 text += more_msg
 
             self.bot.sendMessage(chat_id=chat_id, text=text)
-            
+
+
+class TagsInlineHandler(InlineHandler):
+
+    def query(self, query_id, query_string, from_id):
+
+        from wallebot.app import rds
+
+        binding_key = __USER_GROUP_BINDING_KEY__ % from_id
+        chat_id = rds.get(binding_key)
+
+        fts = FullTextSearch(str(chat_id))
+
+        params = query_string.split(' ')
+        params = ( opencc.convert(x) for x in params )
+        params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
+
+        keyword = ' '.join(params)
+        print '%s: Inline querying keyword %s...' % (chat_id, keyword)
+
+        (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
+
+        results = []
+        if tags:
+            for tag in tags:
+                t = '#{}'.format(tag.encode('utf-8'))
+                results.append(InlineQueryResultArticle(
+                    id=t,
+                    title=t,
+                    input_message_content=dict(message_text=t)
+                ))
+
+        return results
+
+    def get_result(self, result_id):
+        return result_id
+
 
 class TagsMessageHandler(MessageHandler):
 
@@ -50,7 +90,15 @@ class TagsMessageHandler(MessageHandler):
 
     def handle(self, msg):
 
+        from wallebot.app import rds
+
         chat_id = msg['chat']['id']
+        user_id = msg['from']['id']
+
+        # bind user to latest chat group for the inline bot
+        binding_key = __USER_GROUP_BINDING_KEY__ % user_id
+        rds.set(binding_key, chat_id)
+
         fts = FullTextSearch(str(chat_id))
 
         text = msg['text'].replace('\n', ' ').replace(' ', '  ')

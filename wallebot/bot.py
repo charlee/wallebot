@@ -1,6 +1,8 @@
 # coding: utf-8
 
 import random
+import threading
+
 import telepot
 from datetime import datetime, timedelta
 import schedule
@@ -20,6 +22,7 @@ class WallEBot(telepot.Bot):
         self.commands = {}
         self.msg_handlers = []      # msg handlers will be processed in their added order
         self.cron_handlers = []
+        self.inline_handlers = []
 
         self.cmd_counter = []
 
@@ -73,6 +76,24 @@ class WallEBot(telepot.Bot):
                 if msg_handler.test(msg):
                     msg_handler.handle(msg)
 
+    def on_inline_query(self, msg):
+
+        query_id, from_id, query_string = telepot.glance(msg, flavor='inline_query')
+
+        results = []
+
+        for inline_handler in self.inline_handlers:
+            results += inline_handler.query(query_id, query_string, from_id)
+
+        self.answer(query_id, results)
+
+    def on_chosen_inline_result(self, msg):
+        pass
+
+
+    def answer(self, query_id, results):
+        self.answerInlineQuery(query_id, results)
+
     def add_command(self, handler):
         """
         Add a command handler.
@@ -98,3 +119,6 @@ class WallEBot(telepot.Bot):
 
     def add_cron_handler(self, cron_handler):
         self.cron_handlers.append(cron_handler)
+
+    def add_inline_handler(self, inline_handler):
+        self.inline_handlers.append(inline_handler)
