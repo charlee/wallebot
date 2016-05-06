@@ -25,7 +25,7 @@ class TagsCommandHandler(CommandHandler):
 
         keyword = ' '.join(params)
 
-        print '%s: Querying keyword %s...' % (chat_id, keyword)
+        print '%s: Querying keyword %s...' % (chat_id, keyword.encode('utf-8'))
 
         (total, tags) = fts.search(keyword, limit=None)
 
