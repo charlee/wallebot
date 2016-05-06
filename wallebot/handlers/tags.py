@@ -1,9 +1,9 @@
 import re
 import random
-import opencc
 from wallebot.fulltext_search import FullTextSearch
 from .base import CommandHandler, MessageHandler, InlineHandler
 from telepot.namedtuple import InlineQueryResultArticle
+from wallebot.hzconvert import convert
 
 TAGS_DISPLAY_MAX = 20
 
@@ -20,7 +20,7 @@ class TagsCommandHandler(CommandHandler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = ( opencc.convert(x.decode('utf-8')) for x in params )
+        params = ( convert(x.decode('utf-8')) for x in params )
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
@@ -57,7 +57,7 @@ class TagsInlineHandler(InlineHandler):
         fts = FullTextSearch(str(chat_id))
 
         params = query_string.split(' ')
-        params = ( opencc.convert(x) for x in params )
+        params = ( convert(x) for x in params )
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
