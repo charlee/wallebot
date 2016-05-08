@@ -61,7 +61,7 @@ class TagsInlineHandler(InlineHandler):
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
-        print '%s: Inline querying keyword %s...' % (chat_id, keyword)
+        print '%s: Inline querying keyword %s...' % (chat_id, keyword.encode('utf-8'))
 
         (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
 
