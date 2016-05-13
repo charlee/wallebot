@@ -15,8 +15,6 @@ class WallEBot(telepot.Bot):
 
     def __init__(self, *args, **kwargs):
         super(WallEBot, self).__init__(*args, **kwargs)
-        self._answerer = telepot.helper.Answerer(self)
-        self._message_with_inline_keyboard = None
 
         self.handlers = []
 
@@ -32,6 +30,9 @@ class WallEBot(telepot.Bot):
         )
 
     def on_chat_message(self, msg):
+        '''Deal with chat message and commands.
+        All chat messages are passed to `msg_handlers` and commands are passed to
+        `cmd_handlers`.'''
         content_type, chat_type, chat_id = telepot.glance(msg)
 
         if content_type != 'text':
@@ -73,7 +74,7 @@ class WallEBot(telepot.Bot):
                 handler.message(msg)
 
     def on_inline_query(self, msg):
-
+        '''Deal with inline queries.'''
         query_id, from_id, query_string = telepot.glance(msg, flavor='inline_query')
 
         results = []
