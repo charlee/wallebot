@@ -1,10 +1,11 @@
-from .base import Handler
+from . import Handler
 import logging
 
 log = logging.getLogger(__name__)
 
 __REPEAT_KEY__ = 'repeat:%s'      # chat_id
 THRESHOLD = 3
+
 
 class RepeatHandler(Handler):
     """
@@ -34,7 +35,7 @@ class RepeatHandler(Handler):
 
             log.info('Found repeat, add user %s, user=%s ' % (username, last_users))
 
-            if len(last_users) == THRESHOLD:            # use # to ensure msg is sent only once
+            if len(last_users) == THRESHOLD:    # use # to ensure msg is sent only once
 
                 log.info('Triggered repeat, sending msg to %s' % chat_id)
                 self.bot.sendMessage(chat_id=chat_id, text=text)
@@ -44,5 +45,3 @@ class RepeatHandler(Handler):
         else:
             rds.hset(key, 'text', text)
             rds.hset(key, 'users', username)
-
-

@@ -4,4 +4,3 @@ try:
 except ImportError:
     from hanziconv import HanziConv
     convert = HanziConv.toSimplified
-

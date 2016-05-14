@@ -1,20 +1,25 @@
 import os
 import json
-from .base import Handler
+from . import Handler
 
 TAGS_DISPLAY_MAX = 20
 TAGS_KEY = 'tags:%d'
+
 
 class MudEmoteHandler(Handler):
 
     aliases = ('chat', 'e')
     HELP_CMD_COUNT = 100
-    
+
     def __init__(self, bot):
         super(MudEmoteHandler, self).__init__(bot)
 
         # load emote.json
-        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'emote.json')
+        path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            'data',
+            'emote.json'
+        )
         self.emotes = json.loads(open(path).read())
 
     def get_emote(self, action, target_type='none'):
@@ -33,7 +38,6 @@ class MudEmoteHandler(Handler):
             msg = msg_dict.get('other')
 
         return msg
-            
 
     def command(self, msg, params):
         if not params:
@@ -67,7 +71,6 @@ class MudEmoteHandler(Handler):
             emote = emote.replace('%u', username)
             if target and target != username:
                 emote = emote.replace('%t', target)
-            
+
         if emote and '%t' not in emote:
             self.bot.sendMessage(chat_id=chat_id, text=emote)
-    

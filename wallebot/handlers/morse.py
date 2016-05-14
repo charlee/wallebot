@@ -1,14 +1,13 @@
 # coding: utf-8
 
 import re
-from .base import Handler
+from . import Handler
 
 import logging
 
 log = logging.getLogger(__name__)
 
 MORSE_CODE = {
-    
     '.-'  : 'A',
     '-...': 'B',
     '-.-.': 'C',
@@ -55,6 +54,7 @@ MORSE_CODE = {
     '-..-.' : '/',
 }
 
+
 class MorseCodeHandler(Handler):
 
     def message(self, msg):
@@ -81,9 +81,5 @@ class MorseCodeHandler(Handler):
 
             self.bot.sendMessage(chat_id=chat_id, text=result)
 
-
     def translate(self, morse):
         return MORSE_CODE.get(morse, '*')
-        
-
-        

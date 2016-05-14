@@ -4,6 +4,7 @@ import config
 
 ENV_CONFIG_PREFIX = 'WALLEBOT_'
 
+
 class Config(object):
     pass
 
@@ -17,7 +18,5 @@ def load_config():
     for k in os.environ:
         if k.startswith(ENV_CONFIG_PREFIX):
             setattr(cfg, k[len(ENV_CONFIG_PREFIX):], os.environ[k])
-            
+
     return cfg
-    
-    

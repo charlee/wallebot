@@ -15,6 +15,7 @@ bot = WallEBot(cfg.TELEGRAM_TOKEN)
 
 bot.add_handlers(TagsHandler, MorseCodeHandler, MudEmoteHandler, RepeatHandler)
 
+
 def run():
     bot.message_loop()
     print('Listening...')

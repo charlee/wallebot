@@ -5,11 +5,11 @@ import logging
 
 import telepot
 from datetime import datetime, timedelta
-from .handlers import Handler
 
 CMD_QUOTA = 6    # max 10 cmds / min
 
 log = logging.getLogger(__name__)
+
 
 class WallEBot(telepot.Bot):
 
@@ -52,20 +52,20 @@ class WallEBot(telepot.Bot):
             else:
 
                 # check command handlers and run matching handler
-                parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
+                parts = map(lambda x: x.strip(), filter(None, text.split(' ')))
                 cmd = parts[0].lstrip('/')
                 params = parts[1:]
                 handler = self.find_command(cmd)
 
                 # add command to counter to check for quota
-                self.cmd_counter.append({ 'cmd': text, 'time': datetime.now() })
+                self.cmd_counter.append({'cmd': text, 'time': datetime.now()})
 
                 if handler:
                     # log
-                    log.info("%s: Run command: %s, quota=%d" % (chat_id, text, CMD_QUOTA - len(self.cmd_counter)))
+                    log.info("{}: Run command: {}, quota={}".format(
+                        chat_id, text.encode('utf-8'), CMD_QUOTA - len(self.cmd_counter)))
 
                     handler.command(msg, params)
-
 
         # otherwise, its a normal message
         else:
@@ -86,7 +86,6 @@ class WallEBot(telepot.Bot):
     def on_chosen_inline_result(self, msg):
         pass
 
-
     def answer(self, query_id, results):
         self.answerInlineQuery(query_id, results)
 
@@ -103,4 +102,3 @@ class WallEBot(telepot.Bot):
                 return handler
 
         return None
-

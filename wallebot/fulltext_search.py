@@ -27,7 +27,6 @@ class FullTextSearch(object):
         else:
             self.ix = open_dir(index_path)
 
-
     def add_document(self, content):
         writer = self.ix.writer()
         writer.add_document(ngrams=content, content=content)
@@ -38,8 +37,7 @@ class FullTextSearch(object):
         for content in contents:
             writer.add_document(ngrams=content, content=content)
         writer.commit()
-        
-        
+
     def search(self, keyword, limit=20):
         qp = QueryParser("ngrams", schema=self.ix.schema)
         q = qp.parse(keyword)
@@ -49,4 +47,3 @@ class FullTextSearch(object):
             results = (hits.scored_length(), [s['content'] for s in hits])
 
         return results
-

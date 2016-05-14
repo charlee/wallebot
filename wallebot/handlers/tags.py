@@ -2,7 +2,7 @@ import re
 import random
 import logging
 from wallebot.fulltext_search import FullTextSearch
-from .base import Handler
+from . import Handler
 from telepot.namedtuple import InlineQueryResultArticle
 from wallebot.hzconvert import convert
 
@@ -12,6 +12,7 @@ TAGS_DISPLAY_MAX = 20
 
 # binds user to specific group. key => value: user_id => group_id
 __USER_GROUP_BINDING_KEY__ = 'tags:user_group_binding:%s'
+
 
 class TagsHandler(Handler):
 
@@ -23,8 +24,8 @@ class TagsHandler(Handler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = ( convert(x) for x in params )
-        params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
+        params = (convert(x) for x in params)
+        params = ('NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
         keyword = ' '.join(params)
 
@@ -47,7 +48,6 @@ class TagsHandler(Handler):
 
             self.bot.sendMessage(chat_id=chat_id, text=text)
 
-
     def query(self, query_id, query_string, from_id):
 
         from wallebot.app import rds
@@ -58,8 +58,8 @@ class TagsHandler(Handler):
         fts = FullTextSearch(str(chat_id))
 
         params = query_string.split(' ')
-        params = ( convert(x) for x in params )
-        params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
+        params = (convert(x) for x in params)
+        params = ('NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
         keyword = ' '.join(params)
         log.info('%s: Inline querying keyword %s...' % (chat_id, keyword))
@@ -103,7 +103,7 @@ class TagsHandler(Handler):
         tags = re.findall(r' #.+? ', text)
 
         if tags:
-            tags = map(lambda x:x.strip('# '), tags)
+            tags = map(lambda x: x.strip('# '), tags)
             for tag in tags:
                 (total, results) = fts.search(tag, limit=1)
                 if total == 0:
