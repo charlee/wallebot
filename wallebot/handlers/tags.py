@@ -1,9 +1,12 @@
 import re
 import random
+import logging
 from wallebot.fulltext_search import FullTextSearch
 from .base import CommandHandler, MessageHandler, InlineHandler
 from telepot.namedtuple import InlineQueryResultArticle
 from wallebot.hzconvert import convert
+
+log = logging.getLogger(__name__)
 
 TAGS_DISPLAY_MAX = 20
 
@@ -20,12 +23,12 @@ class TagsCommandHandler(CommandHandler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = ( convert(x.decode('utf-8')) for x in params )
+        params = ( convert(x) for x in params )
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
 
-        print '%s: Querying keyword %s...' % (chat_id, keyword.encode('utf-8'))
+        log.info('%s: Querying keyword %s...' % (chat_id, keyword))
 
         (total, tags) = fts.search(keyword, limit=None)
 
@@ -61,14 +64,14 @@ class TagsInlineHandler(InlineHandler):
         params = ( 'NOT %s' % x[1:] if x.startswith('-') else x for x in params )
 
         keyword = ' '.join(params)
-        print '%s: Inline querying keyword %s...' % (chat_id, keyword.encode('utf-8'))
+        log.info('%s: Inline querying keyword %s...' % (chat_id, keyword))
 
         (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
 
         results = []
         if tags:
             for tag in tags:
-                t = '#{}'.format(tag.encode('utf-8'))
+                t = '#{}'.format(tag)
                 results.append(InlineQueryResultArticle(
                     id=t,
                     title=t,

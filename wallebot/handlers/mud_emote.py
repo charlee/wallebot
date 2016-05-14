@@ -52,7 +52,6 @@ class MudEmoteCommandHandler(CommandHandler):
 
         # process target before use
         if target:
-            target = target.decode('utf-8')
             if target.startswith('@'):
                 target = target[1:]
 

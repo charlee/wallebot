@@ -1,16 +1,15 @@
 # coding: utf-8
 
 import random
-import threading
+import logging
 
 import telepot
 from datetime import datetime, timedelta
-import schedule
-import time
 from .handlers import CommandHandler, MessageHandler
 
 CMD_QUOTA = 6    # max 10 cmds / min
 
+log = logging.getLogger(__name__)
 
 class WallEBot(telepot.Bot):
 
@@ -27,12 +26,12 @@ class WallEBot(telepot.Bot):
         self.cmd_counter = []
 
         self.cmd_denial_msg = (
-            '（；´・д・）好累，让我歇会儿～～',
-            '（´□｀川）ゝ. z Z。。',
-            '（；￣д￣）哈。。',
-            '(｡´-д-)好累。。',
-            '(ó﹏ò｡)TZ 累趴了……',
-            '(´×ω×`)',
+            u'（；´・д・）好累，让我歇会儿～～',
+            u'（´□｀川）ゝ. z Z。。',
+            u'（；￣д￣）哈。。',
+            u'(｡´-д-)好累。。',
+            u'(ó﹏ò｡)TZ 累趴了……',
+            u'(´×ω×`)',
         )
 
     def on_chat_message(self, msg):
@@ -41,7 +40,7 @@ class WallEBot(telepot.Bot):
         if content_type != 'text':
             return
 
-        text = msg['text'].encode('utf-8')
+        text = msg['text']
 
         # if it is a command
         if text.startswith('/'):
@@ -65,7 +64,7 @@ class WallEBot(telepot.Bot):
                     self.cmd_counter.append({ 'cmd': text, 'time': datetime.now() })
 
                     # log
-                    print "%s: Run command: %s, quota=%d" % (chat_id, text, CMD_QUOTA - len(self.cmd_counter))
+                    log.info("%s: Run command: %s, quota=%d" % (chat_id, text, CMD_QUOTA - len(self.cmd_counter)))
 
                     handler.handle(msg, params)
 

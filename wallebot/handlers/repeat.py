@@ -1,4 +1,7 @@
 from .base import MessageHandler
+import logging
+
+log = logging.getLogger(__name__)
 
 __REPEAT_KEY__ = 'repeat:%s'      # chat_id
 THRESHOLD = 3
@@ -22,18 +25,18 @@ class RepeatMessageHandler(MessageHandler):
         last_users = rds.hget(key, 'users') or ''
         last_users = filter(None, last_users.split(','))
 
-        text = msg['text'].encode('utf-8')
+        text = msg['text']
 
         username = msg['from']['username']
         if last_msg == text and username not in last_users:
 
             last_users.append(username)
 
-            print 'Found repeat, add user %s, user=%s ' % (username, last_users)
+            log.info('Found repeat, add user %s, user=%s ' % (username, last_users))
 
             if len(last_users) == THRESHOLD:            # use # to ensure msg is sent only once
 
-                print 'Triggered repeat, sending msg to %s' % chat_id
+                log.info('Triggered repeat, sending msg to %s' % chat_id)
                 self.bot.sendMessage(chat_id=chat_id, text=text)
 
             rds.hset(key, 'users', ','.join(last_users))

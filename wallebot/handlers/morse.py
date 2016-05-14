@@ -3,6 +3,10 @@
 import re
 from .base import MessageHandler
 
+import logging
+
+log = logging.getLogger(__name__)
+
 MORSE_CODE = {
     
     '.-'  : 'A',
@@ -54,13 +58,13 @@ MORSE_CODE = {
 class MorseCodeHandler(MessageHandler):
 
     def test(self, msg):
-        text = msg['text'].encode('utf-8').replace('—', '--')
+        text = msg['text'].replace(u'—', u'--')
         return re.match(r'^[-_./ ]+$', text)
 
     def handle(self, msg):
 
-        text = msg['text'].encode('utf-8')
-        text = text.replace('—', '--').replace('_', '-')
+        text = msg['text']
+        text = text.replace(u'—', u'--').replace(u'_', u'-')
 
         chat_id = msg['chat']['id']
 
@@ -74,7 +78,7 @@ class MorseCodeHandler(MessageHandler):
 
         if len(result) >= 3:
 
-            print 'Translate morse: %s // %s' % (text, result)
+            log.info('Translate morse: %s // %s' % (text, result))
 
             self.bot.sendMessage(chat_id=chat_id, text=result)
 
