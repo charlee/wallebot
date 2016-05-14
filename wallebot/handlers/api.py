@@ -1,4 +1,5 @@
-from .base import CommandHandler, MessageHandler
+# flake8: noqa
+from . import Handler
 import random
 import string
 import time
@@ -8,13 +9,13 @@ API_TOKEN_REV_KEY = 'api:rev:token'    # api token -> user id
 API_CHATID_PENDING = 'api:chatid:pending'        # key = user_id, value = expires
 
 
-class APICommandHandler(CommandHandler):
+class APICommandHandler(Handler):
 
     aliases = ('api', )
 
     valid_cmds = ('token', 'chatid')
 
-    def handle(self, msg, params):
+    def command(self, msg, params):
         from wallebot.app import rds
 
         chat_id = msg['chat']['id']
@@ -33,8 +34,6 @@ class APICommandHandler(CommandHandler):
                 func = getattr(self, 'cmd_%s' % cmd, None)
                 if func is not None:
                     func(msg, params)
-
-
 
     def show_help(self, chat_id):
         self.bot.sendMessage(chat_id=chat_id, 
@@ -68,14 +67,10 @@ class APICommandHandler(CommandHandler):
         rds.hset(API_CHATID_PENDING, chat_id, int(time.time()) + 30)
         self.bot.sendMessage(chat_id=chat_id, text='Send any message in 30s in a chat to get its chat_id.')
         
-        
+    def message(self, msg):
+        if msg['text'].startswith('/') or '#' in msg['text']:
+            return
 
-class APIMessageHandler(MessageHandler):
-    
-    def test(self, msg):
-        return not msg['text'].startswith('/') and '#' not in msg['text']
-
-    def handle(self, msg):
         from wallebot.app import rds
         pending = rds.hgetall(API_CHATID_PENDING)
         now = int(time.time())
