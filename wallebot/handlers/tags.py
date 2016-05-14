@@ -2,7 +2,7 @@ import re
 import random
 import logging
 from wallebot.fulltext_search import FullTextSearch
-from .base import CommandHandler, MessageHandler, InlineHandler
+from .base import Handler
 from telepot.namedtuple import InlineQueryResultArticle
 from wallebot.hzconvert import convert
 
@@ -13,11 +13,11 @@ TAGS_DISPLAY_MAX = 20
 # binds user to specific group. key => value: user_id => group_id
 __USER_GROUP_BINDING_KEY__ = 'tags:user_group_binding:%s'
 
-class TagsCommandHandler(CommandHandler):
+class TagsHandler(Handler):
 
-    aliases = ('tags', 't')
+    aliases = ['tags', 't']
 
-    def handle(self, msg, params):
+    def command(self, msg, params):
 
         chat_id = msg['chat']['id']
 
@@ -47,8 +47,6 @@ class TagsCommandHandler(CommandHandler):
 
             self.bot.sendMessage(chat_id=chat_id, text=text)
 
-
-class TagsInlineHandler(InlineHandler):
 
     def query(self, query_id, query_string, from_id):
 
@@ -83,17 +81,13 @@ class TagsInlineHandler(InlineHandler):
     def get_result(self, result_id):
         return result_id
 
-
-class TagsMessageHandler(MessageHandler):
-
-    def test(self, msg):
-        text = msg['text']
-        return text and (text.startswith('#') or ' #' in text)
-
-
-    def handle(self, msg):
+    def message(self, msg):
 
         from wallebot.app import rds
+
+        text = msg['text']
+        if not text and (text.startswith('#') or ' #' in text):
+            return
 
         chat_id = msg['chat']['id']
         user_id = msg['from']['id']

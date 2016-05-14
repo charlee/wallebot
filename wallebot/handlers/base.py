@@ -2,44 +2,29 @@ import pytz
 from tzlocal import get_localzone
 from datetime import datetime
 
-class CommandHandler(object):
+
+class Handler(object):
+
+    aliases = []
 
     def __init__(self, bot):
         self.bot = bot
 
+    def command(self, msg, params):
+        '''Deal with command.'''
+        pass
 
-    def handle(self, msg, params):
-        raise NotImplemented
-
-
-class InlineHandler(object):
-    def __init__(self, bot):
-        self.bot = bot
+    def message(self, msg):
+        '''Deal with text message.'''
+        pass
 
     def query(self, query_id, query_string, from_id):
-        raise NotImplemented
+        '''Deal with inline query.'''
+        pass
 
     def get_result(self, result_id):
-        raise NotImplemented
-
-
-class MessageHandler(object):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-    def test(self, msg):
-        """
-        Test if message matches this handler.
-        """
-        raise NotImplemented
-
-
-    def handle(self, msg):
-        """
-        Handle this message
-        """
-        raise NotImplemented
+        '''Deal with inline query result selecting.'''
+        pass
 
 
 class CronHandler(object):

@@ -1,4 +1,4 @@
-from .base import MessageHandler
+from .base import Handler
 import logging
 
 log = logging.getLogger(__name__)
@@ -6,15 +6,15 @@ log = logging.getLogger(__name__)
 __REPEAT_KEY__ = 'repeat:%s'      # chat_id
 THRESHOLD = 3
 
-class RepeatMessageHandler(MessageHandler):
+class RepeatHandler(Handler):
     """
     This handler will repeat message if at least THRESHOLD people have repeated it.
     """
 
-    def test(self, msg):
-        return not msg['text'].startswith('/') and '#' not in msg['text']
+    def message(self, msg):
 
-    def handle(self, msg):
+        if msg['text'].startswith('/') or '#' in msg['text']:
+            return
 
         chat_id = msg['chat']['id']
 

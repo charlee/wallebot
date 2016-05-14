@@ -1,1 +1,1 @@
-from .base import CommandHandler, MessageHandler
+from .base import Handler

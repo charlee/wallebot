@@ -5,7 +5,7 @@ import logging
 
 import telepot
 from datetime import datetime, timedelta
-from .handlers import CommandHandler, MessageHandler
+from .handlers import Handler
 
 CMD_QUOTA = 6    # max 10 cmds / min
 
@@ -18,10 +18,7 @@ class WallEBot(telepot.Bot):
         self._answerer = telepot.helper.Answerer(self)
         self._message_with_inline_keyboard = None
 
-        self.commands = {}
-        self.msg_handlers = []      # msg handlers will be processed in their added order
-        self.cron_handlers = []
-        self.inline_handlers = []
+        self.handlers = []
 
         self.cmd_counter = []
 
@@ -58,22 +55,22 @@ class WallEBot(telepot.Bot):
                 parts = map(lambda x:x.strip(), filter(None, text.split(' ')))
                 cmd = parts[0].lstrip('/')
                 params = parts[1:]
-                handler = self.commands.get(cmd)
-                if handler and isinstance(handler, CommandHandler):
-                    # add command to counter to check for quota
-                    self.cmd_counter.append({ 'cmd': text, 'time': datetime.now() })
+                handler = self.find_command(cmd)
 
+                # add command to counter to check for quota
+                self.cmd_counter.append({ 'cmd': text, 'time': datetime.now() })
+
+                if handler:
                     # log
                     log.info("%s: Run command: %s, quota=%d" % (chat_id, text, CMD_QUOTA - len(self.cmd_counter)))
 
-                    handler.handle(msg, params)
+                    handler.command(msg, params)
 
 
         # otherwise, its a normal message
         else:
-            for msg_handler in self.msg_handlers:
-                if msg_handler.test(msg):
-                    msg_handler.handle(msg)
+            for handler in self.handlers:
+                handler.message(msg)
 
     def on_inline_query(self, msg):
 
@@ -93,31 +90,17 @@ class WallEBot(telepot.Bot):
     def answer(self, query_id, results):
         self.answerInlineQuery(query_id, results)
 
-    def add_command(self, handler):
+    def add_handlers(self, *args):
         """
         Add a command handler.
         """
-        for alias in handler.aliases:
-            if alias not in self.commands:
-                self.commands[alias] = handler
+        for clazz in args:
+            self.handlers.append(clazz(self))
 
-    def remove_command(self, handler):
-        """
-        Remove a command handler.
-        """
-        for alias in handler.alias:
-            if alias in self.commands:
-                del self.commands[alias]
+    def find_command(self, cmd):
+        for handler in self.handlers:
+            if cmd in handler.aliases:
+                return handler
 
-    def add_msg_handler(self, msg_handler):
-        """
-        Add a message handler.
-        """
-        self.msg_handlers.append(msg_handler)
+        return None
 
-
-    def add_cron_handler(self, cron_handler):
-        self.cron_handlers.append(cron_handler)
-
-    def add_inline_handler(self, inline_handler):
-        self.inline_handlers.append(inline_handler)

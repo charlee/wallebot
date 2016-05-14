@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import re
-from .base import MessageHandler
+from .base import Handler
 
 import logging
 
@@ -55,16 +55,15 @@ MORSE_CODE = {
     '-..-.' : '/',
 }
 
-class MorseCodeHandler(MessageHandler):
+class MorseCodeHandler(Handler):
 
-    def test(self, msg):
-        text = msg['text'].replace(u'—', u'--')
-        return re.match(r'^[-_./ ]+$', text)
-
-    def handle(self, msg):
+    def message(self, msg):
 
         text = msg['text']
         text = text.replace(u'—', u'--').replace(u'_', u'-')
+
+        if not re.match(r'^[-_./ ]+$', text):
+            return
 
         chat_id = msg['chat']['id']
 

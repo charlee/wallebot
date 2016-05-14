@@ -1,17 +1,17 @@
 import os
 import json
-from .base import CommandHandler
+from .base import Handler
 
 TAGS_DISPLAY_MAX = 20
 TAGS_KEY = 'tags:%d'
 
-class MudEmoteCommandHandler(CommandHandler):
+class MudEmoteHandler(Handler):
 
     aliases = ('chat', 'e')
     HELP_CMD_COUNT = 100
     
     def __init__(self, bot):
-        super(MudEmoteCommandHandler, self).__init__(bot)
+        super(MudEmoteHandler, self).__init__(bot)
 
         # load emote.json
         path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'emote.json')
@@ -35,7 +35,7 @@ class MudEmoteCommandHandler(CommandHandler):
         return msg
             
 
-    def handle(self, msg, params):
+    def command(self, msg, params):
         if not params:
             if msg.chat.type == 'private':
                 keys = sorted(self.emotes.keys())
