@@ -1,7 +1,7 @@
-from mock import MagicMock, Mock, patch
+from mock import MagicMock, Mock, patch, ANY
 
 from wallebot.bot import WallEBot
-from wallebot.handlers import CommandHandler
+from wallebot.handlers import Handler
 from wallebot.tests.base import WallEBaseTestCase
 
 
@@ -11,23 +11,27 @@ class BotTestCase(WallEBaseTestCase):
 
     def setUp(self):
         bot = WallEBot(self.TOKEN)
-        self.cmd_handler = Mock(CommandHandler, aliases=('tags', 't'))
-        self.msg_handler = Mock()
-        self.inline_handler = Mock()
-        self.cron_handler = Mock()
+        self.handler = Mock(Handler, aliases=('tags', 't'))
 
-        bot.add_command(self.cmd_handler)
-        bot.add_msg_handler(self.msg_handler)
-        bot.add_inline_handler(self.inline_handler)
-        bot.add_cron_handler(self.cron_handler)
+        bot.add_handlers(self.handler)
+        bot.sendMessage = Mock()
 
         self.bot = bot
 
     def test_on_chat_msg_cmd(self):
+        '''Test if cmd handler is correctly called on chat cmds.'''
         msg = self.make_group_text('/t TAG')
         self.bot.on_chat_message(msg)
-        self.cmd_handler.handle.assert_called_with(msg, ['TAG'])
+        self.handler.command.assert_called_with(msg, ['TAG'])
 
         msg = self.make_group_text('/tags TAG1 TAG2')
         self.bot.on_chat_message(msg)
-        self.cmd_handler.handle.assert_called_with(msg, ['TAG1', 'TAG2'])
+        self.handler.command.assert_called_with(msg, ['TAG1', 'TAG2'])
+
+    def test_on_chat_msg_denial(self):
+        '''Test if denial works correctly.'''
+        msg = self.make_group_text('/t TAG')
+        for _ in range(self.bot.CMD_QUOTA + 1):
+            self.bot.on_chat_message(msg)
+
+        self.bot.sendMessage.assert_called_with(chat_id=msg['chat']['id'], text=ANY)

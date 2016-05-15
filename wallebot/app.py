@@ -13,7 +13,12 @@ cfg = load_config()
 rds = redis.StrictRedis(host=cfg.REDIS_HOST, db=cfg.REDIS_DB)
 bot = WallEBot(cfg.TELEGRAM_TOKEN)
 
-bot.add_handlers(TagsHandler, MorseCodeHandler, MudEmoteHandler, RepeatHandler)
+bot.add_handlers(
+    TagsHandler(bot),
+    MorseCodeHandler(bot),
+    MudEmoteHandler(bot),
+    RepeatHandler(bot)
+)
 
 
 def run():

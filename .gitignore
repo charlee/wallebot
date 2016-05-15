@@ -6,3 +6,4 @@ run/
 .idea/
 *.rdb
 fulltext_search_index/
+.coverage
