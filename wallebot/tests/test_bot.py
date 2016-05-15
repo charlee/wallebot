@@ -1,4 +1,4 @@
-from mock import MagicMock, Mock, patch, ANY
+from mock import Mock, ANY
 
 from wallebot.bot import WallEBot
 from wallebot.handlers import Handler

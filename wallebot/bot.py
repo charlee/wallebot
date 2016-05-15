@@ -62,8 +62,13 @@ class WallEBot(telepot.Bot):
 
                 if handler:
                     # log
-                    log.info("{}: Run command: {}, quota={}".format(
-                        chat_id, text.encode('utf-8'), self.CMD_QUOTA - len(self.cmd_counter)))
+                    log.info(
+                        "{}: Run command: {}, quota={}".format(
+                            chat_id,
+                            text.encode('utf-8'),
+                            self.CMD_QUOTA - len(self.cmd_counter)
+                        )
+                    )
 
                     handler.command(msg, params)
 

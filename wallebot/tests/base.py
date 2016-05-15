@@ -1,5 +1,6 @@
 import unittest
 
+
 class WallEBaseTestCase(unittest.TestCase):
 
     def make_text(self, text, type='group'):
@@ -22,4 +23,3 @@ class WallEBaseTestCase(unittest.TestCase):
 
     def make_group_text(self, text):
         return self.make_text(text, type='group')
-

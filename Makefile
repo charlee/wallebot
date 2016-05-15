@@ -4,4 +4,4 @@ run:
 	python run.py
 	
 test:
-	nosetests --with-coverage --cover-inclusive --cover-package=wallebot  wallebot
+	nosetests -s --with-coverage --cover-inclusive --cover-package=wallebot  wallebot
