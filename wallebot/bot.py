@@ -6,12 +6,12 @@ import logging
 import telepot
 from datetime import datetime, timedelta
 
-CMD_QUOTA = 6    # max 10 cmds / min
-
 log = logging.getLogger(__name__)
 
 
 class WallEBot(telepot.Bot):
+
+    CMD_QUOTA = 6       # max cmds count / min
 
     def __init__(self, *args, **kwargs):
         super(WallEBot, self).__init__(*args, **kwargs)
@@ -47,11 +47,10 @@ class WallEBot(telepot.Bot):
             while self.cmd_counter and self.cmd_counter[0]['time'] < expire_time:
                 self.cmd_counter.pop(0)
 
-            if len(self.cmd_counter) >= CMD_QUOTA:
+            if len(self.cmd_counter) >= self.CMD_QUOTA:
                 self.sendMessage(chat_id=chat_id, text=random.choice(self.cmd_denial_msg))
 
             else:
-
                 # check command handlers and run matching handler
                 parts = map(lambda x: x.strip(), filter(None, text.split(' ')))
                 cmd = parts[0].lstrip('/')
@@ -63,8 +62,13 @@ class WallEBot(telepot.Bot):
 
                 if handler:
                     # log
-                    log.info("{}: Run command: {}, quota={}".format(
-                        chat_id, text.encode('utf-8'), CMD_QUOTA - len(self.cmd_counter)))
+                    log.info(
+                        "{}: Run command: {}, quota={}".format(
+                            chat_id,
+                            text.encode('utf-8'),
+                            self.CMD_QUOTA - len(self.cmd_counter)
+                        )
+                    )
 
                     handler.command(msg, params)
 
@@ -94,8 +98,8 @@ class WallEBot(telepot.Bot):
         """
         Add a command handler.
         """
-        for clazz in args:
-            self.handlers.append(clazz(self))
+        for handler in args:
+            self.handlers.append(handler)
 
     def find_command(self, cmd):
         for handler in self.handlers:

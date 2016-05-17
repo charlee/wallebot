@@ -1,7 +1,7 @@
 import os
 
 # set this item in env! (WALLEBOT_TELEGRAM_TOKEN)
-#TELEGRAM_TOKEN='token'
+TELEGRAM_TOKEN=''
 
 BASEDIR = os.path.dirname(__file__)
 

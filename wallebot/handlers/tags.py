@@ -8,17 +8,31 @@ from wallebot.hzconvert import convert
 
 log = logging.getLogger(__name__)
 
-TAGS_DISPLAY_MAX = 20
 
 # binds user to specific group. key => value: user_id => group_id
-__USER_GROUP_BINDING_KEY__ = 'tags:user_group_binding:%s'
-
 
 class TagsHandler(Handler):
+    '''Provides tags related features.
 
+    This handler will catch all the tags (starts with `#`) and store them in full text
+    search engine. Use `/t` command to find matched tags and display them randomly.
+
+    Commands:
+        /t <query>  Query for existing tags. (alias: `/tags <query>`)
+
+                    The following operators can be used.
+
+                    - AND, <space>: and
+                    - OR: or
+                    - `-`: not
+    '''
+
+    TAGS_DISPLAY_MAX = 20
+    USER_GROUP_BINDING_KEY = 'tags:user_group_binding:%s'
     aliases = ['tags', 't']
 
     def command(self, msg, params):
+        '''Command handler. Implements `/t` command.'''
 
         chat_id = msg['chat']['id']
 
@@ -34,12 +48,10 @@ class TagsHandler(Handler):
         (total, tags) = fts.search(keyword, limit=None)
 
         if tags:
-
             more_msg = ''
-
-            if len(tags) > TAGS_DISPLAY_MAX:
-                more_msg = "\n...and %d tags more" % (len(tags) - TAGS_DISPLAY_MAX)
-                tags = random.sample(tags, TAGS_DISPLAY_MAX)
+            if len(tags) > self.TAGS_DISPLAY_MAX:
+                more_msg = "\n...and %d tags more" % (len(tags) - self.TAGS_DISPLAY_MAX)
+                tags = random.sample(tags, self.TAGS_DISPLAY_MAX)
 
             text = '\n'.join('#' + tag for tag in tags)
 
@@ -52,7 +64,7 @@ class TagsHandler(Handler):
 
         from wallebot.app import rds
 
-        binding_key = __USER_GROUP_BINDING_KEY__ % from_id
+        binding_key = self.USER_GROUP_BINDING_KEY % from_id
         chat_id = rds.get(binding_key)
 
         fts = FullTextSearch(str(chat_id))
@@ -64,7 +76,7 @@ class TagsHandler(Handler):
         keyword = ' '.join(params)
         log.info('%s: Inline querying keyword %s...' % (chat_id, keyword))
 
-        (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
+        (total, tags) = fts.search(keyword, limit=self.TAGS_DISPLAY_MAX)
 
         results = []
         if tags:
@@ -82,6 +94,7 @@ class TagsHandler(Handler):
         return result_id
 
     def message(self, msg):
+        '''Message handler. Store all the tags to full text search engine.'''
 
         from wallebot.app import rds
 
@@ -93,7 +106,7 @@ class TagsHandler(Handler):
         user_id = msg['from']['id']
 
         # bind user to latest chat group for the inline bot
-        binding_key = __USER_GROUP_BINDING_KEY__ % user_id
+        binding_key = self.USER_GROUP_BINDING_KEY % user_id
         rds.set(binding_key, chat_id)
 
         fts = FullTextSearch(str(chat_id))

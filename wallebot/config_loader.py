@@ -10,6 +10,11 @@ class Config(object):
 
 
 def load_config():
+    '''Load config from `config.py`
+
+    The property in `config.py` must start with [A-Z_] to become a valid `Config` item.
+    Also environment variables start with `WALLEBOT_` will be copied to `Config`.
+    '''
     cfg = Config()
     for k in config.__dict__:
         if re.match(r'[A-Z_]+', k):
