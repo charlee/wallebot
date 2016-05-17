@@ -60,7 +60,7 @@ class WallEBot(telepot.Bot):
                 # add command to counter to check for quota
                 self.cmd_counter.append({'cmd': text, 'time': datetime.now()})
 
-                if handler:
+                if handler and hasattr(handler, 'command'):
                     # log
                     log.info(
                         "{}: Run command: {}, quota={}".format(
@@ -75,7 +75,8 @@ class WallEBot(telepot.Bot):
         # otherwise, its a normal message
         else:
             for handler in self.handlers:
-                handler.message(msg)
+                if hasattr(handler, 'message'):
+                    handler.message(msg)
 
     def on_inline_query(self, msg):
         '''Deal with inline queries.'''
@@ -83,8 +84,9 @@ class WallEBot(telepot.Bot):
 
         results = []
 
-        for inline_handler in self.inline_handlers:
-            results += inline_handler.query(query_id, query_string, from_id)
+        for handler in self.handlers:
+            if hasattr(handler, 'query'):
+                results += handler.query(query_id, query_string, from_id)
 
         self.answer(query_id, results)
 

@@ -39,21 +39,21 @@ class TagsHandler(Handler):
         fts = FullTextSearch(str(chat_id))
 
         params = (convert(x) for x in params)
-        params = ('NOT %s' % x[1:] if x.startswith('-') else x for x in params)
+        params = (u'NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
-        keyword = ' '.join(params)
+        keyword = u' '.join(params)
 
-        log.info('%s: Querying keyword %s...' % (chat_id, keyword))
+        log.info(u'%s: Querying keyword %s...' % (chat_id, keyword))
 
         (total, tags) = fts.search(keyword, limit=None)
 
         if tags:
-            more_msg = ''
+            more_msg = u''
             if len(tags) > self.TAGS_DISPLAY_MAX:
                 more_msg = "\n...and %d tags more" % (len(tags) - self.TAGS_DISPLAY_MAX)
                 tags = random.sample(tags, self.TAGS_DISPLAY_MAX)
 
-            text = '\n'.join('#' + tag for tag in tags)
+            text = '\n'.join(u'#' + tag for tag in tags)
 
             if more_msg:
                 text += more_msg
@@ -69,19 +69,19 @@ class TagsHandler(Handler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = query_string.split(' ')
+        params = query_string.split(u' ')
         params = (convert(x) for x in params)
-        params = ('NOT %s' % x[1:] if x.startswith('-') else x for x in params)
+        params = (u'NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
-        keyword = ' '.join(params)
-        log.info('%s: Inline querying keyword %s...' % (chat_id, keyword))
+        keyword = u' '.join(params)
+        log.info(u'%s: Inline querying keyword %s...' % (chat_id, keyword))
 
         (total, tags) = fts.search(keyword, limit=self.TAGS_DISPLAY_MAX)
 
         results = []
         if tags:
             for tag in tags:
-                t = '#{}'.format(tag)
+                t = u'#{}'.format(tag)
                 results.append(InlineQueryResultArticle(
                     id=t,
                     title=t,
@@ -121,6 +121,6 @@ class TagsHandler(Handler):
                 (total, results) = fts.search(tag, limit=1)
                 if total == 0:
                     fts.add_document(tag)
-                    print "%s: Added tag: %s" % (chat_id, tag)
+                    log.info("{}: Added tag: {}".format(chat_id, tag.encode('utf-8')))
 
-            print "%s: Added tags: %s" % (chat_id, ', '.join(tags))
+            log.info("{}: Added tags: {}".format(chat_id, ', '.join(tags).encode('utf-8')))
