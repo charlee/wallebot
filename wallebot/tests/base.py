@@ -1,7 +1,8 @@
 import unittest
 
-
 class WallEBaseTestCase(unittest.TestCase):
+
+    TOKEN = '123456'
 
     def make_text(self, text, type='group'):
         return {

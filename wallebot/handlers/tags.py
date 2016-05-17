@@ -8,7 +8,6 @@ from wallebot.hzconvert import convert
 
 log = logging.getLogger(__name__)
 
-TAGS_DISPLAY_MAX = 20
 
 # binds user to specific group. key => value: user_id => group_id
 
@@ -28,6 +27,7 @@ class TagsHandler(Handler):
                     - `-`: not
     '''
 
+    TAGS_DISPLAY_MAX = 20
     USER_GROUP_BINDING_KEY = 'tags:user_group_binding:%s'
     aliases = ['tags', 't']
 
@@ -48,12 +48,10 @@ class TagsHandler(Handler):
         (total, tags) = fts.search(keyword, limit=None)
 
         if tags:
-
             more_msg = ''
-
-            if len(tags) > TAGS_DISPLAY_MAX:
-                more_msg = "\n...and %d tags more" % (len(tags) - TAGS_DISPLAY_MAX)
-                tags = random.sample(tags, TAGS_DISPLAY_MAX)
+            if len(tags) > self.TAGS_DISPLAY_MAX:
+                more_msg = "\n...and %d tags more" % (len(tags) - self.TAGS_DISPLAY_MAX)
+                tags = random.sample(tags, self.TAGS_DISPLAY_MAX)
 
             text = '\n'.join('#' + tag for tag in tags)
 
@@ -78,7 +76,7 @@ class TagsHandler(Handler):
         keyword = ' '.join(params)
         log.info('%s: Inline querying keyword %s...' % (chat_id, keyword))
 
-        (total, tags) = fts.search(keyword, limit=TAGS_DISPLAY_MAX)
+        (total, tags) = fts.search(keyword, limit=self.TAGS_DISPLAY_MAX)
 
         results = []
         if tags:
