@@ -22,7 +22,7 @@ class RepeatHandler(Handler):
         from wallebot.app import rds
         key = __REPEAT_KEY__ % chat_id
 
-        last_msg = rds.hget(key, 'text')
+        last_msg = rds.hget(key, 'text').decode('utf-8')
         last_users = rds.hget(key, 'users') or ''
         last_users = filter(None, last_users.split(','))
 
@@ -43,5 +43,5 @@ class RepeatHandler(Handler):
             rds.hset(key, 'users', ','.join(last_users))
 
         else:
-            rds.hset(key, 'text', text)
+            rds.hset(key, 'text', text.encode('utf-8'))
             rds.hset(key, 'users', username)
