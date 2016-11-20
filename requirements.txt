@@ -14,3 +14,4 @@ wheel==0.24.0
 telepot==7.1
 OpenCC==0.2
 Whoosh==2.7.4
+xkcd==2.4.0
