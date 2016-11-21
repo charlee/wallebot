@@ -1,7 +1,7 @@
 import os
 
 # set this item in env! (WALLEBOT_TELEGRAM_TOKEN)
-TELEGRAM_TOKEN=''
+TELEGRAM_TOKEN = ''
 
 BASEDIR = os.path.dirname(__file__)
 
@@ -14,4 +14,4 @@ TIMEZONE = 'US/Eastern'
 
 FULLTEXT_SEARCH_INDEX_DIR = os.path.join(BASEDIR, 'fulltext_search_index')
 
-DEBUG = True
+DEBUG = False
