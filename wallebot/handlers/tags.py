@@ -4,7 +4,7 @@ import logging
 from wallebot.fulltext_search import FullTextSearch
 from . import Handler
 from telepot.namedtuple import InlineQueryResultArticle
-from wallebot.hzconvert import convert
+#from wallebot.hzconvert import convert
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class TagsHandler(Handler):
 
         fts = FullTextSearch(str(chat_id))
 
-        params = (convert(x) for x in params)
+        #params = (convert(x) for x in params)
         params = (u'NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
         keyword = u' '.join(params)
@@ -70,7 +70,7 @@ class TagsHandler(Handler):
         fts = FullTextSearch(str(chat_id))
 
         params = query_string.split(u' ')
-        params = (convert(x) for x in params)
+        #params = (convert(x) for x in params)
         params = (u'NOT %s' % x[1:] if x.startswith('-') else x for x in params)
 
         keyword = u' '.join(params)
