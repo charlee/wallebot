@@ -3,6 +3,7 @@
 from . import Handler
 import logging
 import xkcd
+from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup
 
 log = logging.getLogger(__name__)
 
@@ -60,8 +61,14 @@ class RepeatHandler(Handler):
             comic = xkcd.getRandomComic()
             log.info('Triggered repeat, sending comic(id=%s) to %s'
                      % (comic.number, chat_id))
-            text = '{}\n{}'.format(comic.getTitle(), comic.getImageLink())
-            self.bot.sendMessage(chat_id=chat_id, text=text)
+            text = '{}: {}\n{}'.format(comic.number, comic.getTitle(), comic.getImageLink())
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [
+                    InlineKeyboardButton(text='xkcd', url=comic.link),
+                    InlineKeyboardButton(text='explain', url=comic.getExplanation()),
+                ]
+            ])
+            self.bot.sendMessage(chat_id=chat_id, text=text, reply_markup=keyboard)
 
         else:
 
